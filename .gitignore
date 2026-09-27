@@ -1,0 +1,8 @@
+# avoid publicly sharing real database credentials
+api/config.php
+
+# avoid adding mac junk file to repo
+.DS_Store
+
+# avoid sharing vscode settings
+.vscode/
