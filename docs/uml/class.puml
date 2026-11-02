@@ -1,0 +1,76 @@
+@startuml
+skinparam classAttributeIconSize 0
+hide empty members
+
+package "Frontend (public/js)" {
+  class CodeJS <<code.js>> {
+    urlBase : string
+    extension : string
+    userId : int
+    firstName : string
+    lastName : string
+    doLogin()
+    saveCookie()
+    readCookie()
+    doLogout()
+    addColor()
+    searchColor()
+  }
+}
+
+package "API (PHP)" {
+  class Login <<Login.php>> {
+    getRequestInfo() : array
+    sendResultInfoAsJson(obj)
+    returnWithError(err)
+    returnWithInfo(firstName, lastName, id)
+  }
+  class AddColor <<AddColor.php>> {
+    getRequestInfo() : array
+    sendResultInfoAsJson(obj)
+    returnWithError(err)
+  }
+  class SearchColors <<SearchColors.php>> {
+    getRequestInfo() : array
+    sendResultInfoAsJson(obj)
+    returnWithError(err)
+    returnWithInfo(searchResults)
+  }
+  class Config <<config.php>> {
+    DB_HOST : string
+    DB_USER : string
+    DB_PASS : string
+    DB_NAME : string
+  }
+}
+
+package "Database (MySQL: COP4331)" {
+  class User <<table: Users>> {
+    ID : int <<PK>>
+    FirstName : varchar(50)
+    LastName : varchar(50)
+    Login : varchar(50)
+    Password : varchar(50)
+  }
+  class Color <<table: Colors>> {
+    ID : int <<PK>>
+    Name : varchar(50)
+    UserID : int
+  }
+}
+
+User "1" -- "0..*" Color : owns >
+note bottom of Color : UserID refers to User.ID\n(not enforced by a foreign key)
+
+CodeJS ..> Login : POST JSON
+CodeJS ..> AddColor : POST JSON
+CodeJS ..> SearchColors : POST JSON
+
+Login ..> Config : require_once
+AddColor ..> Config : require_once
+SearchColors ..> Config : require_once
+
+Login ..> User : SELECT
+AddColor ..> Color : INSERT
+SearchColors ..> Color : SELECT
+@enduml
