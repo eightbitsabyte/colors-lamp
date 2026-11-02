@@ -1,0 +1,36 @@
+@startuml
+|Browser (code.js)|
+start
+:User enters login and password;
+:User clicks Log In;
+:doLogin() builds JSON {login, password};
+:POST to LAMPAPI/Login.php;
+
+|Login.php|
+:Read JSON request body;
+:Connect to MySQL using config.php;
+if (Connection error?) then (yes)
+  :Return JSON with id = 0 and the error;
+else (no)
+  |MySQL|
+  :SELECT ID, firstName, lastName FROM Users
+  WHERE Login = ? AND Password = ?;
+  |Login.php|
+  if (Matching row?) then (yes)
+    :Return JSON with id, firstName, lastName;
+  else (no)
+    :Return JSON with id = 0, "No Records Found";
+  endif
+endif
+
+|Browser (code.js)|
+:Parse JSON response;
+if (userId < 1?) then (yes)
+  :Show "User/Password combination incorrect";
+  stop
+else (no)
+  :saveCookie() stores firstName, lastName, userId (20 min);
+  :Redirect to color.html;
+  stop
+endif
+@enduml
