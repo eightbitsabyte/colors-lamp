@@ -44,6 +44,20 @@ colors-lamp/
 3. Add colors
 4. Search colors
 
+## UML Diagrams
+
+PlantUML source files and rendered images are in `docs/uml/`. To re-render after editing a `.puml` file:
+`plantuml -tpng docs/uml/<name>.puml`
+
+### Use Case Diagram
+![Use case diagram](docs/uml/usecase.png)
+
+### Activity Diagram (Login Flow)
+![Activity diagram](docs/uml/activity.png)
+
+### Class Diagram
+![Class diagram](docs/uml/class.png)
+
 ## Limitations
 - `userId` comes from the request body in `AddColor.php` and `SearchColors.php`. Anyone could send `"userId": 3` and read or add another user's colors.
 - String-built JSON functions need to be rebuilt with `json_encode()` to avoid broken JSON.
@@ -73,3 +87,16 @@ This repository was organized and documented with help from a generative AI tool
 - "Is this all I need inside my api/config.example.php file?" (followed by my draft)
 - "Can you check on my other files before I commit them?" (followed by my AddColor.php and SearchColors.php)
 - "Here's my code.js file, I didn't see anything sensitive but I wanted to check with you first:" (followed by my code.js)
+
+ ### Assignment 2: UML Diagrams
+
+- **Tool**: Claude Opus 5.5 (Anthropic, accessed via claude.ai)
+- **Date**: November 1, 2026
+- **Use**:
+  - Drafted the PlantUML source for the use case, activity, and class diagrams based on the code in this repository
+  - Explained PlantUML setup and rendering
+- **Verification**: I checked each diagram against the actual code and the live app, and confirmed the database schema by running `DESCRIBE` on the production database (which showed that `Colors.UserID` has no foreign key constraint).
+
+**Example prompts used:**
+- “Turn this database schema into a UML class diagram.”
+- "Does this look correct so far?" (with my `usecase.puml`)
