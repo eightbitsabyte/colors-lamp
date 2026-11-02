@@ -1,0 +1,22 @@
+@startuml
+left to right direction
+actor User
+
+rectangle "COLORS Web App" {
+  usecase "Log In" as Login
+  usecase "Add Color" as Add
+  usecase "Search Colors" as Search
+  usecase "Log Out" as Logout
+}
+
+User --> Login
+User --> Add
+User --> Search
+User --> Logout
+
+note right of Add
+  Requires an active login
+  (code.js redirects to index.html
+  if the cookie has no userId)
+end note
+@enduml
