@@ -84,7 +84,7 @@ input[type="text"],input[type="password"]{
     font-family: Ubuntu, sans-serif;
 }
 
-#inner-title{
+#innerTitle{
     display: inline-block;
     font-size: 0.8em;
     width: 90%;
