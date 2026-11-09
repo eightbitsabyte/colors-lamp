@@ -65,6 +65,18 @@ PlantUML source files and rendered images are in `docs/uml/`. To re-render after
 ### Class Diagram
 ![Class diagram](docs/uml/class.png)
 
+## Linting (CI)
+
+A GitHub Actions workflow (`.github/workflows/lint.yml`) runs on every push and pull request and checks:
+- **HTML**: HTMLHint (`.htmlhintrc`)
+- **CSS**: Stylelint with `stylelint-config-standard` (`.stylelintrc.json`)
+- **JavaScript**: ESLint recommended rules (`eslint.config.mjs`)
+
+Node.js is used only to install and run the linters, not to run the app. To lint locally:
+`npm ci` then `npm run lint`
+
+`md5.js` is excluded because it's a third-party library. The ID selector rule is configured for camelCase because the JavaScript looks up elements by camelCase IDs.
+
 ## Limitations
 - `userId` comes from the request body in `AddColor.php` and `SearchColors.php`. Anyone could send `"userId": 3` and read or add another user's colors.
 - String-built JSON functions need to be rebuilt with `json_encode()` to avoid broken JSON.
