@@ -5,17 +5,17 @@ This project hosts the files for a LAMP-stack web app where users log in and add
 ## Built With
 
 - PHP
-- Ubunto on DigitalOcean
+- Ubuntu on DigitalOcean
 - Apache
 - MySQL
-- HTML/CSS/Javascript with AJAX
+- HTML/CSS/JavaScript with AJAX
 
 ## Repository structure
 ```
 colors-lamp/
 ├── api/
 │   ├── config.example.php
-│   ├── config.php (not commited; you create this)
+│   ├── config.php (not committed; you create this)
 │   ├── Login.php
 │   ├── AddColor.php
 │   └── SearchColors.php
@@ -25,6 +25,13 @@ colors-lamp/
 │   ├── css/
 │   ├── images/
 │   └── js/
+├── .github/workflows/lint.yml
+├── docs/uml/
+├── eslint.config.mjs
+├── package.json
+├── package-lock.json
+├── .htmlhintrc
+├── .stylelintrc.json
 ├── .gitignore
 ├── LICENSE.md
 └── README.md
@@ -100,3 +107,17 @@ This repository was organized and documented with help from a generative AI tool
 **Example prompts used:**
 - “Turn this database schema into a UML class diagram.”
 - "Does this look correct so far?" (with my `usecase.puml`)
+
+### Assignment 4: Linting with GitHub Actions
+
+- **Tool**: Claude Opus 5.5 (Anthropic, accessed via claude.ai)
+- **Date**: November 8, 2026
+- **Use**:
+  - Provided the GitHub Actions workflow (`lint.yml`) and the linter configuration files (`eslint.config.mjs`, `.stylelintrc.json`, `.htmlhintrc`)
+  - Explained the lint errors from my local runs and suggested fixes: adding doctypes, configuring the ID selector rule for camelCase, the `/* exported */` comment for functions called from HTML, and fixing a duplicate key in `addColor()`
+  - Helped resolve a push error caused by my access token missing the `workflow` scope
+- **Verification**: I ran all three linters locally before pushing, renamed the one kebab-case ID (`inner-title` → `innerTitle`) to match the rest of the project, and confirmed the final run passes in the Actions tab.
+
+**Example prompts used:**
+- "Is this correct?" (with my `git add` command for the config files)
+- My pasted output from `npm run lint:html`, `lint:css`, and `lint:js`, asking for help fixing the errors
