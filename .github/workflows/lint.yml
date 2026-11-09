@@ -1,0 +1,27 @@
+name: Lint
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Lint HTML
+        run: npm run lint:html
+      - name: Lint CSS
+        if: ${{ !cancelled() }}
+        run: npm run lint:css
+      - name: Lint JS
+        if: ${{ !cancelled() }}
+        run: npm run lint:js
+
+        # the if: ${{ !cancelled() }} lines make all three linters run even when an earlier one fails,
+        # so you see every error in one run
