@@ -6,11 +6,17 @@
   "directories": {
     "doc": "docs"
   },
-  "scripts": {
+    "scripts": {
     "lint:html": "htmlhint \"public/**/*.html\"",
     "lint:css": "stylelint \"public/css/**/*.css\"",
     "lint:js": "eslint public/js",
-    "lint": "npm run lint:html && npm run lint:css && npm run lint:js"
+    "lint": "npm run lint:html && npm run lint:css && npm run lint:js",
+    "test": "jest",
+    "test:unit": "jest tests/unit",
+    "test:integration": "jest tests/integration"
+  },
+  "jest": {
+    "testTimeout": 15000
   },
   "repository": {
     "type": "git",
@@ -18,7 +24,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "type": "commonjs",
   "bugs": {
     "url": "https://github.com/eightbitsabyte/colors-lamp/issues"
@@ -29,6 +35,7 @@
     "eslint": "^10.14.0",
     "globals": "^17.14.0",
     "htmlhint": "^1.9.2",
+    "jest": "^30.5.2",
     "stylelint": "^18.0.0",
     "stylelint-config-standard": "^41.0.0"
   }
