@@ -25,6 +25,10 @@ colors-lamp/
 │   ├── css/
 │   ├── images/
 │   └── js/
+├── tests/
+│   ├── sql/schema.sql
+│   ├── unit/code.test.js
+│   └── integration/api.test.js
 ├── .github/workflows/lint.yml
 ├── docs/uml/
 ├── eslint.config.mjs
@@ -39,14 +43,14 @@ colors-lamp/
 
 ## Setup
 - Create a LAMP droplet and point a domain at it
-- Create the database and tables (`Users`, `Colors`)
+- Create the database and load the tables from `tests/sql/schema.sql`
 - Copy `api/config.example.php` to `api/config.php` and fill in real credentials
 - Upload `api/` → `/var/www/html/LAMPAPI/` and `public/` contents → `/var/www/html/`
 - Change `urlBase` in `js/code.js` to your own domain 
 
 ## Running/accessing it
 
-1. Visit the domain (http://kbcop4331c.xyz)
+1. Visit the domain (the original deployment has been taken down; follow Setup to deploy your own copy)
 2. Log in
 3. Add colors
 4. Search colors
@@ -77,12 +81,21 @@ Node.js is used only to install and run the linters, not to run the app. To lint
 
 `md5.js` is excluded because it's a third-party library. The ID selector rule is configured for camelCase because the JavaScript looks up elements by camelCase IDs.
 
+## Testing (CI)
+
+The same workflow (`.github/workflows/lint.yml`, "Lint and Test") runs Jest tests on every push and pull request:
+- **Unit tests** (`tests/unit/`) cover the helper functions in `public/js/code.js`: `parseCookie()` and `formatColorList()`.
+- **Integration tests** (`tests/integration/`) send real HTTP requests to `Login.php`, `SearchColors.php`, and `AddColor.php` and check the JSON responses.
+
+For integration tests, CI starts a throwaway MySQL database loaded from `tests/sql/schema.sql` (with a test user and colors), writes a CI-only `api/config.php`, and serves the API with PHP's built-in server. Node.js is only used to run Jest, not the app.
+
+Run unit tests locally with `npm run test:unit`. Integration tests need PHP and MySQL, so they run in CI.
+
 ## Limitations
 - `userId` comes from the request body in `AddColor.php` and `SearchColors.php`. Anyone could send `"userId": 3` and read or add another user's colors.
 - String-built JSON functions need to be rebuilt with `json_encode()` to avoid broken JSON.
 - SearchColors' `returnWithError` includes `id`, `firstName`, and `lastName` fields that don't belong to a search response.
 - AddColor always reports success (`error: ""`), even if the insert silently fails.
-- The frontend throws an error when a search has no matches.
 - `userId` lives in a plain cookie. Anyone can edit it in dev tools and become another user.
 - Passwords go over plain HTTP, unhashed (the `md5` lines are commented out and there's no HTTPS).
 
@@ -133,3 +146,17 @@ This repository was organized and documented with help from a generative AI tool
 **Example prompts used:**
 - "Is this correct?" (with my `git add` command for the config files)
 - My pasted output from `npm run lint:html`, `lint:css`, and `lint:js`, asking for help fixing the errors
+
+### Assignment 5: Automated Testing with GitHub Actions
+
+- **Tool**: Claude Opus 5.5 (Anthropic, accessed via claude.ai)
+- **Date**: November 22, 2026
+- **Use**:
+  - Suggested the testing approach: extracting pure helper functions from `code.js` for unit tests, and running PHP and MySQL inside CI for integration tests after my droplet was taken down
+  - Provided the test files, test database schema, updated workflow, and refactored `code.js`
+  - Helped debug CI failures (tests running before the helper functions were committed, and the `formatColorList` crash on missing results)
+- **Verification**: I reviewed the `code.js` diff to confirm only the intended changes, confirmed the failing test caught the no-results bug before fixing it, and confirmed the final run passes in the Actions tab.
+
+**Example prompts used:**
+- "I no longer have access to the domain and the droplet, can you help me modify our testing method?"
+- "How can I implement a guard to formatColorList in code.js?"
