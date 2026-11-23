@@ -1,12 +1,28 @@
-name: Lint
+name: Lint and Test
 
 on:
   push:
   pull_request:
 
 jobs:
-  lint:
+  lint-and-test:
     runs-on: ubuntu-latest
+
+    # Throwaway MySQL database that exists only for this CI run
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: COP4331
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -proot"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=10
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -14,6 +30,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+
       - name: Lint HTML
         run: npm run lint:html
       - name: Lint CSS
@@ -23,5 +40,43 @@ jobs:
         if: ${{ !cancelled() }}
         run: npm run lint:js
 
-        # the if: ${{ !cancelled() }} lines make all three linters run even when an earlier one fails,
-        # so you see every error in one run
+      - name: Unit tests
+        if: ${{ !cancelled() }}
+        run: npm run test:unit
+
+      - name: Set up PHP
+        if: ${{ !cancelled() }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          extensions: mysqli
+
+      - name: Load test database
+        if: ${{ !cancelled() }}
+        run: mysql -h 127.0.0.1 -u root -proot COP4331 < tests/sql/schema.sql
+
+      # config.php is gitignored, so CI writes its own pointing at the test database
+      - name: Create CI database config
+        if: ${{ !cancelled() }}
+        run: |
+          cat > api/config.php <<'EOF'
+          <?php
+          $DB_HOST = "127.0.0.1";
+          $DB_USER = "root";
+          $DB_PASS = "root";
+          $DB_NAME = "COP4331";
+          EOF
+
+      - name: Integration tests
+        if: ${{ !cancelled() }}
+        env:
+          API_BASE_URL: http://127.0.0.1:8000
+        run: |
+          php -S 127.0.0.1:8000 -t api > php-server.log 2>&1 &
+          sleep 2
+          npm run test:integration
+
+      - name: Show PHP server log
+        if: failure()
+        run: cat php-server.log || true
+        
