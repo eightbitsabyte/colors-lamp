@@ -94,6 +94,10 @@ function parseCookie(cookieString)
 // Builds the HTML list of colors from the API results (pure function, unit tested)
 function formatColorList(results)
 {
+	if (!Array.isArray(results))
+	{
+		return "";
+	}
 	return results.join("<br />\r\n");
 }
 
